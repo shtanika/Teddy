@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --teddy-beige: 31 87% 89%;
+    --teddy-light: 33 100% 97%;
+    --teddy-brown: 25 76% 31%;
+    --teddy-accent: 19 67% 38%;
+    --teddy-muted: 25 33% 74%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-teddy-beige to-teddy-light min-h-screen text-teddy-brown;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
