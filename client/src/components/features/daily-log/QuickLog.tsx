@@ -123,7 +123,7 @@ export function QuickLog({ onLogUpdate, className }: QuickLogProps) {
         <h3 className="text-lg font-semibold text-teddy-brown mb-6">Quick Log</h3>
 
         {/* Quick Action Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6">
           {quickActions.map((action) => {
             const total = getTotalForType(action.type);
             const isDecrementDisabled = isActionDisabled(action.type, false);
