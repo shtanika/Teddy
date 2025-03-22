@@ -1,5 +1,4 @@
 'use client';
-import Header from './Header';
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -13,9 +12,14 @@ export default function PageContainer({
   subtitle 
 }: PageContainerProps) {
   return (
-    <div className="min-h-screen">
-      <Header title={title} subtitle={subtitle} />
+    <div className="h-full flex flex-col">
       <div className="p-8">
+        <h1 className="text-2xl font-bold text-teddy-brown">{title}</h1>
+        {subtitle && (
+          <p className="text-sm text-teddy-accent mt-1">{subtitle}</p>
+        )}
+      </div>
+      <div className="flex-1 p-8 pt-0 overflow-auto">
         {children}
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/common/Button';
 
 // Icons
 import {
@@ -9,9 +10,7 @@ import {
   Target,
   Book,
   Cpu,
-  Heart,
-  Settings,
-  Bell
+  LogOut,
 } from 'lucide-react';
 
 const navItems = [
@@ -27,14 +26,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-white/95 backdrop-blur-md border-r border-teddy-muted/20 flex flex-col h-screen fixed">
-      <div className="p-6">
-        <div className="flex items-center space-x-3">
-          <Heart className="w-8 h-8 text-teddy-brown" />
-          <span className="text-xl font-semibold text-teddy-brown">Teddy</span>
-        </div>
-      </div>
-      
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 pt-8">
         <div className="space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -59,12 +51,14 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-teddy-muted/20">
-        <div className="flex items-center space-x-3 p-3">
-          <div className="w-8 h-8 rounded-full bg-teddy-brown text-white flex items-center justify-center">
-            U
-          </div>
-          <span className="text-teddy-brown">User Name</span>
-        </div>
+        <Button
+          variant="secondary"
+          className="w-full justify-start"
+          onClick={() => {/* Handle sign out */}}
+        >
+          <LogOut className="w-5 h-5 mr-2" />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );
