@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        quicksand: ['var(--font-quicksand)'],
+      },
       colors: {
         teddy: {
           beige: 'hsl(var(--teddy-beige) / <alpha-value>)',

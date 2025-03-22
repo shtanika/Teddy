@@ -10,7 +10,6 @@ export default function PagesLayout({
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col ml-64">
-        <Header />
         <main className="flex-1">
           {children}
         </main>
