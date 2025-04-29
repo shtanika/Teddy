@@ -1,18 +1,26 @@
 import express from 'express';
-import { connectDB } from './src/config/database.js';
 import cors from 'cors';
 import morgan from 'morgan';
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./src/lib/auth.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your Next.js client URL
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(morgan('dev')); // Logging
 
-// Connect to MongoDB
-connectDB();
+// Mount Better Auth handler before express.json middleware
+app.all("/api/auth/*", toNodeHandler(auth));
+
+// Mount express json middleware after Better Auth handler
+app.use(express.json());
 
 // Basic route for testing
 app.get('/', (req, res) => {
