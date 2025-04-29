@@ -1,5 +1,7 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/common/Button';
 import { Logo } from '@/components/common/Logo';
@@ -24,9 +26,29 @@ const navItems = [
   { name: 'AI Insights', icon: Cpu, href: '/ai-insights' },
 ];
 
+interface UserData {
+  name: string;
+  image: string | null;
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: session, error } = await authClient.getSession();
+      if (session?.user?.name) {
+        setUserData({
+          name: session.user.name,
+          image: session.user.image || null
+        });
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -51,10 +73,22 @@ export default function Sidebar() {
           <span className="text-2xl font-bold text-teddy-brown font-quicksand">Teddy</span>
         </div>
         <div className="flex flex-col items-center gap-2 mb-14 max-w-[180px] mx-auto">
-          <div className="w-20 h-20 rounded-lg bg-teddy-beige/30 flex items-center justify-center">
-            <User className="w-10 h-10 text-teddy-muted" />
+          <div className="w-20 h-20 rounded-lg bg-teddy-beige/30 flex items-center justify-center overflow-hidden">
+            {userData?.image ? (
+              <Image
+                src={userData.image}
+                alt={userData.name}
+                width={80}
+                height={80}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <User className="w-10 h-10 text-teddy-muted" />
+            )}
           </div>
-          <span className="text-base font-medium text-teddy-brown">User Name</span>
+          <span className="text-base font-medium text-teddy-brown">
+            {userData?.name || 'Loading...'}
+          </span>
         </div>
       </div>
 
