@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/common/Button';
 import { Logo } from '@/components/common/Logo';
+import { authClient } from '@/lib/auth-client';
 
 // Icons
 import {
@@ -25,6 +26,21 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push('/signin');
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Sign out failed:', error);
+    }
+  };
 
   return (
     <aside className="w-64 bg-white/95 backdrop-blur-md border-r border-teddy-muted/20 flex flex-col h-screen fixed">
@@ -72,7 +88,7 @@ export default function Sidebar() {
         <Button
           variant="secondary"
           className="w-full justify-center"
-          onClick={() => {/* Handle sign out */}}
+          onClick={handleSignOut}
         >
           <LogOut className="w-5 h-5 mr-2" />
           Sign Out
