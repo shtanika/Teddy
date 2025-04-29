@@ -57,10 +57,10 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teddy-beige to-teddy-light py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-teddy-brown">
             Sign in to your account
           </h2>
         </div>
@@ -78,7 +78,7 @@ export default function SignInPage() {
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-teddy-muted/20 placeholder-teddy-muted bg-white/80 text-teddy-brown focus:outline-none focus:ring-2 focus:ring-teddy-brown/20 focus:border-teddy-brown/20 sm:text-sm"
                 placeholder="Email address"
               />
             </div>
@@ -89,7 +89,7 @@ export default function SignInPage() {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-teddy-muted/20 placeholder-teddy-muted bg-white/80 text-teddy-brown focus:outline-none focus:ring-2 focus:ring-teddy-brown/20 focus:border-teddy-brown/20 sm:text-sm"
                 placeholder="Password"
               />
             </div>
@@ -99,7 +99,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-teddy-brown hover:bg-teddy-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teddy-brown/20 transition-colors"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -108,10 +108,10 @@ export default function SignInPage() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-teddy-muted/20" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+                <span className="px-2 bg-gradient-to-br from-teddy-beige to-teddy-light text-teddy-brown">Or continue with</span>
               </div>
             </div>
 
@@ -119,7 +119,7 @@ export default function SignInPage() {
               <button
                 type="button"
                 onClick={() => handleSocialSignIn('google')}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="w-full inline-flex justify-center py-2 px-4 border border-teddy-muted/20 rounded-lg shadow-sm bg-white/80 text-sm font-medium text-teddy-brown hover:bg-teddy-beige/50 transition-colors"
               >
                 Google
               </button>
@@ -127,7 +127,10 @@ export default function SignInPage() {
           </div>
 
           <div className="text-center">
-            <Link href="/signup" className="text-sm text-indigo-600 hover:text-indigo-500">
+            <Link 
+              href="/signup" 
+              className="text-sm text-teddy-brown hover:text-teddy-accent transition-colors"
+            >
               Don't have an account? Sign up
             </Link>
           </div>
