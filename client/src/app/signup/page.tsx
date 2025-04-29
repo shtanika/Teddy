@@ -20,8 +20,6 @@ export default function SignUpPage() {
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
 
-    console.log('Starting signup with:', { email, name }); // Don't log password
-
     const { data, error } = await authClient.signUp.email({
       email,
       password,
