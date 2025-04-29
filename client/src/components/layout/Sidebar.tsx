@@ -12,7 +12,6 @@ import {
   Book,
   Cpu,
   LogOut,
-  Heart,
   User,
 } from 'lucide-react';
 

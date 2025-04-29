@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Logo } from '@/components/common/Logo';
 
 export default function LandingPage() {
   return (
@@ -8,11 +9,9 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-teddy-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <svg className="w-8 h-8 text-teddy-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <span className="text-xl font-semibold">Teddy</span>
+            <div className="flex items-center justify-center gap-1">
+              <Logo className="w-8 h-8" />
+              <span className="text-2xl font-bold text-teddy-brown font-quicksand">Teddy</span>
             </div>
             <div className="flex items-center space-x-4">
               <a href="#features" className="text-teddy-accent hover:text-teddy-brown transition-colors">Features</a>
