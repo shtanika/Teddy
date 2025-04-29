@@ -17,9 +17,8 @@ export default function LandingPage() {
             <div className="flex items-center space-x-4">
               <a href="#features" className="text-teddy-accent hover:text-teddy-brown transition-colors">Features</a>
               <a href="#about" className="text-teddy-accent hover:text-teddy-brown transition-colors">About</a>
-              <a href="#contact" className="text-teddy-accent hover:text-teddy-brown transition-colors">Contact</a>
-              <Link href="/dashboard" className="px-4 py-2 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
-                Get Started
+              <Link href="/signup" className="px-4 py-2 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
+                Sign Up
               </Link>
             </div>
           </div>
@@ -38,7 +37,7 @@ export default function LandingPage() {
                 Track your mood, sleep, and daily habits with Teddy - your AI-powered wellness companion that helps you understand and improve your well-being.
               </p>
               <div className="flex space-x-4">
-                <Link href="/dashboard" className="px-6 py-3 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
+                <Link href="/signup" className="px-6 py-3 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
                   Start Your Journey
                 </Link>
                 <button className="px-6 py-3 border border-teddy-brown text-teddy-brown rounded-lg hover:bg-teddy-beige/50 transition-colors">
@@ -144,28 +143,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-16 px-4 bg-white/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
-            <p className="text-lg text-teddy-accent">Join thousands of users who are already improving their well-being with Teddy.</p>
-          </div>
-          <div className="max-w-md mx-auto">
-            <form className="space-y-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 rounded-lg border border-teddy-muted/20 focus:outline-none focus:border-teddy-brown/30"
-              />
-              <button className="w-full px-6 py-3 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
-                Start Your Journey
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-teddy-muted/20">
         <div className="max-w-7xl mx-auto">
@@ -179,7 +156,6 @@ export default function LandingPage() {
             <div className="flex space-x-6">
               <a href="#" className="text-teddy-accent hover:text-teddy-brown transition-colors">Privacy</a>
               <a href="#" className="text-teddy-accent hover:text-teddy-brown transition-colors">Terms</a>
-              <a href="#" className="text-teddy-accent hover:text-teddy-brown transition-colors">Contact</a>
             </div>
           </div>
         </div>
