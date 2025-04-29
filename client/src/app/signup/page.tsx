@@ -34,6 +34,7 @@ export default function SignUpPage() {
       },
       onError: (ctx) => {
         setError(ctx.error.message);
+        setLoading(false);
       },
     });
   }
