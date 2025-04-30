@@ -21,6 +21,10 @@ const BYPASS_PATHS = [
   '/favicon.ico',
   '/signin',
   '/signup',
+]
+
+// Auth-only redirect paths
+const AUTH_REDIRECT_PATHS = [
   '/',
 ]
 
@@ -30,17 +34,23 @@ export default async function middleware(request: NextRequest) {
 
   const isProtected = PROTECTED_PATHS.some(p => path.startsWith(p))
   const shouldBypass = BYPASS_PATHS.some(p => path === p || path.startsWith(`${p}/`))
-
-  // Allow public paths or non-protected ones
-  if (!isProtected || shouldBypass) {
-    return NextResponse.next()
-  }
+  const shouldRedirectIfAuth = AUTH_REDIRECT_PATHS.some(p => path === p)
 
   const sessionCookie = getSessionCookie(request)
-  console.log('🍪 [Middleware] Session cookie:', sessionCookie)
+
+  try {
+    // Handle landing page redirect for authenticated users
+    if (shouldRedirectIfAuth && sessionCookie) {
+      console.log('👤 [Middleware] Authenticated user on landing page, redirecting to dashboard')
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+
+    // Allow public paths or non-protected ones
+    if (!isProtected || shouldBypass) {
+      return NextResponse.next()
+    }
 
   // For protected paths, check session
-  try {
     if (!sessionCookie) {
       console.warn('⚠️ [Middleware] Not authenticated. Redirecting.')
       return NextResponse.redirect(new URL('/signin', request.url))
@@ -54,9 +64,9 @@ export default async function middleware(request: NextRequest) {
   }
 }
 
-// Only apply to protected paths
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/daily-log/:path*',
     '/goals/:path*',
