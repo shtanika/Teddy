@@ -77,9 +77,11 @@ model DailyLog {
   userId     String
 
   date       DateTime   @unique
-  mood       String
+  mood       Int
   steps      Int
-  sleep      SleepLog?
+  stepsGoal  Int?
+
+  sleep      SleepLog[]
   exercises  ExerciseLog[]
   
   createdAt  DateTime   @default(now())
@@ -91,6 +93,7 @@ model SleepLog {
   dailyLogId String     @unique
 
   duration   Float      // In hours
+  sleepGoal  Float?     // In hours
   quality    String?     // e.g., "poor", "fair", "good", "excellent"
 }
 
@@ -102,6 +105,7 @@ model ExerciseLog {
   type           ExerciseType? // Predefined type (optional)
   customType     String?       // User-defined label (e.g., "Dancing", "Martial Arts")
   duration       Int           // In minutes
+  exerciseGoal   Int?          // In minutes
   intensity      String?       // e.g., "low", "moderate", "high" (optional)
 }
 
