@@ -18,8 +18,15 @@ export default function SignUpPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const passwordConfirmation = formData.get('passwordConfirmation') as string;
     const name = formData.get('name') as string;
 
+    if (password !== passwordConfirmation) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+    
     const { data, error } = await authClient.signUp.email({
       email,
       password,
@@ -98,6 +105,17 @@ export default function SignUpPage() {
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-teddy-muted/20 placeholder-teddy-muted bg-white/80 text-teddy-brown focus:outline-none focus:ring-2 focus:ring-teddy-brown/20 focus:border-teddy-brown/20 sm:text-sm"
                 placeholder="Password"
+              />
+            </div>
+            <div>
+              <label htmlFor="passwordConfirmation" className="sr-only">Confirm Password</label>
+              <input
+                id="passwordConfirmation"
+                name="passwordConfirmation"
+                type="password"
+                required
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-teddy-muted/20 placeholder-teddy-muted bg-white/80 text-teddy-brown focus:outline-none focus:ring-2 focus:ring-teddy-brown/20 focus:border-teddy-brown/20 sm:text-sm"
+                placeholder="Confirm Password"
               />
             </div>
           </div>
