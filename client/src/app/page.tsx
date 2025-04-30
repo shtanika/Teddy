@@ -17,7 +17,7 @@ export default function LandingPage() {
               <a href="#features" className="text-teddy-accent hover:text-teddy-brown transition-colors">Features</a>
               <a href="#about" className="text-teddy-accent hover:text-teddy-brown transition-colors">About</a>
               <Link href="/signup" className="px-4 py-2 bg-teddy-brown text-white rounded-lg hover:bg-teddy-accent transition-colors">
-                Sign Up
+                Get Started
               </Link>
             </div>
           </div>

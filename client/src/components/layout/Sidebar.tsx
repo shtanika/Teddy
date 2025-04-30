@@ -55,7 +55,7 @@ export default function Sidebar() {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push('/signin');
+            router.push('/');
           },
         },
       });
