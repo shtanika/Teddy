@@ -51,6 +51,7 @@ export default async function middleware(request: NextRequest) {
     }
 
   // For protected paths, check session
+
     if (!sessionCookie) {
       console.warn('⚠️ [Middleware] Not authenticated. Redirecting.')
       return NextResponse.redirect(new URL('/signin', request.url))
