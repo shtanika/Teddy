@@ -21,6 +21,9 @@ model User {
 
   @@unique([email])
   @@map("user")
+
+  logs           DailyLog[]
+  journalEntries JournalEntry[]
 }
 
 model Session {
@@ -66,4 +69,62 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model DailyLog {
+  id         String     @id @map("_id")
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+
+  date       DateTime   @unique
+  mood       String
+  steps      Int
+  sleep      SleepLog?
+  exercises  ExerciseLog[]
+  
+  createdAt  DateTime   @default(now())
+}
+
+model SleepLog {
+  id         String     @id @map("_id")
+  dailyLog   DailyLog   @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  dailyLogId String     @unique
+
+  duration   Float      // In hours
+  quality    String?     // e.g., "poor", "fair", "good", "excellent"
+}
+
+model ExerciseLog {
+  id             String        @id @map("_id")
+  dailyLog       DailyLog      @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  dailyLogId     String        @unique
+
+  type           ExerciseType? // Predefined type (optional)
+  customType     String?       // User-defined label (e.g., "Dancing", "Martial Arts")
+  duration       Int           // In minutes
+  intensity      String?       // e.g., "low", "moderate", "high" (optional)
+}
+
+enum ExerciseType {
+  walking
+  running
+  cycling
+  swimming
+  yoga
+  strength
+  other
+}
+
+model JournalEntry {
+  id        String     @id @map("_id")
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  date      DateTime   @default(now())
+  content   String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+
+  mood      String?
+  tags      String[]
 }
