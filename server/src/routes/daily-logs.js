@@ -55,9 +55,16 @@ router.post('/', async (req, res) => {
 // Get user's daily logs
 router.get('/', async (req, res) => {
   try {
+    // Extract userId from query parameters or request body
+    const userId = req.query.userId || req.body.userId;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+    
     const dailyLogs = await prisma.dailyLog.findMany({
       where: {
-        userId: req.user.id,
+        userId: userId,
       },
       include: {
         user: true,
@@ -68,10 +75,14 @@ router.get('/', async (req, res) => {
         date: 'desc',
       },
     });
+    
     res.json(dailyLogs);
   } catch (error) {
     console.error('Error fetching daily logs:', error);
-    res.status(500).json({ error: 'Failed to fetch daily logs' });
+    res.status(500).json({ 
+      error: 'Failed to fetch daily logs',
+      details: error.message 
+    });
   }
 });
 

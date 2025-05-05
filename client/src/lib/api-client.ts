@@ -1,4 +1,5 @@
 type DailyLogData = {
+  userId: string;
   mood: number;
   steps: number;
   stepsGoal?: number;
@@ -26,22 +27,26 @@ export const apiClient = {
       body: JSON.stringify(data),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      throw new Error('Failed to create daily log');
+      throw new Error(responseData.details || responseData.error || 'Failed to create daily log');
     }
 
-    return response.json();
+    return responseData;
   },
 
-  getDailyLogs: async () => {
-    const response = await fetch('/api/daily-logs', {
+  getDailyLogs: async (userId: string) => {
+    const response = await fetch(`/api/daily-logs?userId=${encodeURIComponent(userId)}`, {
       credentials: 'include',
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      throw new Error('Failed to fetch daily logs');
+      throw new Error(responseData.details || responseData.error || 'Failed to fetch daily logs');
     }
 
-    return response.json();
+    return responseData;
   },
 };

@@ -23,34 +23,61 @@ const TestPage = () => {
           user: session.user.name,
           id: session.session.userId,
         });
+      } else {
+        // Set the message only if user is not authenticated
+        setResult('Please sign in first');
       }
     };
 
     fetchUserData();
   }, []);
 
-  const mockDailyLogData = {
-    userId: userData?.id,
-    user: userData?.user,
-    mood: 4,
-    steps: 8000,
-    stepsGoal: 10000,
-    sleep: {
-      duration: 7.5,
-      quality: 'good',
-      sleepGoal: 8,
-    },
-    exercise: {
-      type: 'running',
-      duration: 30,
-      intensity: 'moderate',
-    },
-  };
-
   const handleTestCreateDailyLog = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
     setIsLoading(true);
+    
+    const mockDailyLogData = {
+      userId: userData.id,
+      user: userData.user,
+      mood: 4,
+      steps: 8000,
+      stepsGoal: 10000,
+      sleep: {
+        duration: 7.5,
+        quality: 'good',
+        sleepGoal: 8,
+      },
+      exercise: {
+        type: 'running',
+        duration: 30,
+        intensity: 'moderate',
+      },
+    };
+    
     try {
       const response = await apiClient.createDailyLog(mockDailyLogData);
+      setResult(JSON.stringify(response, null, 2));
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTestGetDailyLogs = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await apiClient.getDailyLogs(userData.id);
       setResult(JSON.stringify(response, null, 2));
     } catch (error) {
       setResult(error instanceof Error ? error.message : 'An error occurred');
@@ -63,14 +90,33 @@ const TestPage = () => {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">API Test Page</h1>
       
+      {userData ? (
+        <div className="mb-4 p-4 bg-green-50 rounded-lg">
+          <p>Signed in as: <strong>{userData.user}</strong></p>
+          <p>User ID: <code className="bg-gray-100 px-2 py-1 rounded">{userData.id}</code></p>
+        </div>
+      ) : (
+        <div className="mb-4 p-4 bg-yellow-50 rounded-lg">
+          <p>Not signed in. Please sign in to test the API.</p>
+        </div>
+      )}
+      
       <div className="space-y-6">
-        <div>
+        <div className="flex space-x-4">
           <button
             onClick={handleTestCreateDailyLog}
-            disabled={isLoading}
+            disabled={isLoading || !userData}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
           >
-            {isLoading ? 'Creating...' : 'Create Test Daily Log'}
+            {isLoading ? 'Processing...' : 'Create Test Daily Log'}
+          </button>
+          
+          <button
+            onClick={handleTestGetDailyLogs}
+            disabled={isLoading || !userData}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+          >
+            {isLoading ? 'Processing...' : 'Get Daily Logs'}
           </button>
         </div>
 
