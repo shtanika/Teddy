@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./src/lib/auth.js";
+import routes from './src/routes/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,13 +17,16 @@ app.use(cors({
 }));
 app.use(morgan('dev')); // Logging
 
-// Mount Better Auth handler before express.json middleware
+// Auth routes
 app.all("/api/auth/*", toNodeHandler(auth));
 
-// Mount express json middleware after Better Auth handler
+// Parse JSON bodies
 app.use(express.json());
 
-// Basic route for testing
+// API routes
+app.use('/api', routes);
+
+// Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running' });
 });
