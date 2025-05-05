@@ -11,7 +11,7 @@ import { authClient } from '@/lib/auth-client';
 import {
   Grid,
   PlusCircle,
-  Target,
+  //Target,
   Book,
   Cpu,
   LogOut,
@@ -21,7 +21,7 @@ import {
 const navItems = [
   { name: 'Dashboard', icon: Grid, href: '/dashboard' },
   { name: 'Daily Log', icon: PlusCircle, href: '/daily-log' },
-  { name: 'Goals', icon: Target, href: '/goals' },
+  //{ name: 'Goals', icon: Target, href: '/goals' },
   { name: 'Journal', icon: Book, href: '/journal' },
   { name: 'AI Insights', icon: Cpu, href: '/ai-insights' },
 ];
