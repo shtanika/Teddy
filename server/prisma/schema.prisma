@@ -77,12 +77,12 @@ model DailyLog {
   userId     String
 
   date       DateTime   @unique
-  mood       Int
-  steps      Int
+  mood       Int?
+  steps      Int?
   stepsGoal  Int?
 
-  sleep      SleepLog[]
-  exercises  ExerciseLog[]
+  sleep      SleepLog[]?
+  exercises  ExerciseLog[]?
   
   createdAt  DateTime   @default(now())
 }
