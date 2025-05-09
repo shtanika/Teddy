@@ -1,7 +1,7 @@
 import { Stat } from "@/components/common/Stat";
 import { Card } from "@/components/common/Card";
 
-interface StatItem {
+export interface StatItem {
   title: string;
   value: string | number;
   icon: React.ReactNode;
