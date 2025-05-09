@@ -280,12 +280,15 @@ export default function JournalPage() {
                       </span>
                     )}
                     <div className="relative group">
-                      <button className="text-teddy-accent hover:text-teddy-brown">
+                      <button className="text-teddy-accent hover:text-teddy-brown p-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                         </svg>
                       </button>
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 hidden group-hover:block">
+                      <div 
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300"
+                        style={{ transitionDelay: '150ms' }}
+                      >
                         <Link 
                           href={`/journal/${entry.id}`}
                           className="block px-4 py-2 text-teddy-accent hover:bg-teddy-beige/50 hover:text-teddy-brown"
