@@ -155,4 +155,33 @@ export const apiClient = {
 
     return responseData;
   },
+
+  // AI Insights methods
+  getDailyLogsInsights: async (userId: string) => {
+    const response = await fetch(`/api/ai-insights/daily-logs?userId=${encodeURIComponent(userId)}`, {
+      credentials: 'include',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.details || responseData.error || responseData.message || 'Failed to fetch AI insights');
+    }
+
+    return responseData;
+  },
+
+  getComprehensiveInsights: async (userId: string) => {
+    const response = await fetch(`/api/ai-insights/comprehensive?userId=${encodeURIComponent(userId)}`, {
+      credentials: 'include',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.details || responseData.error || responseData.message || 'Failed to fetch comprehensive AI insights');
+    }
+
+    return responseData;
+  },
 };
