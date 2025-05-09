@@ -27,6 +27,7 @@ export default function JournalPage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -179,6 +180,24 @@ export default function JournalPage() {
     );
   };
 
+  const handleDelete = async (entryId: string) => {
+    if (!userData) return;
+    
+    if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
+      setIsDeleting(entryId);
+      try {
+        await apiClient.deleteJournalEntry(entryId, userData.id);
+        // Update the entries list by filtering out the deleted entry
+        setEntries(entries.filter(entry => entry.id !== entryId));
+      } catch (error) {
+        console.error('Failed to delete journal entry:', error);
+        alert('Failed to delete journal entry. Please try again.');
+      } finally {
+        setIsDeleting(null);
+      }
+    }
+  };
+
   return (
     <PageContainer title="Journal">
       {/* Header with search and new entry button */}
@@ -232,7 +251,7 @@ export default function JournalPage() {
 
       {/* Journal Entries */}
       {viewMode === 'list' && (
-        <div className="space-y-6">
+        <div className="space-y-10"> {/* Changed from space-y-6 to space-y-10 */}
           {isLoading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teddy-brown"></div>
@@ -256,7 +275,7 @@ export default function JournalPage() {
             </div>
           ) : (
             filteredEntries.map(entry => (
-              <div key={entry.id} className="journal-entry card p-6">
+              <div key={entry.id} className="journal-entry card p-6 relative"> {/* Added relative positioning */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-teddy-beige/50 rounded-lg flex items-center justify-center">
@@ -302,15 +321,11 @@ export default function JournalPage() {
                           Edit Entry
                         </Link>
                         <button 
-                          className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
-                          onClick={() => {
-                            if (confirm('Are you sure you want to delete this entry?')) {
-                              // Delete functionality would go here
-                              console.log('Delete entry:', entry.id);
-                            }
-                          }}
+                          className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 disabled:opacity-50"
+                          onClick={() => handleDelete(entry.id)}
+                          disabled={isDeleting === entry.id}
                         >
-                          Delete Entry
+                          {isDeleting === entry.id ? 'Deleting...' : 'Delete Entry'}
                         </button>
                       </div>
                     </div>
