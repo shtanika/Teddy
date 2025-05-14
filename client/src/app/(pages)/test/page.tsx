@@ -98,6 +98,7 @@ const TestPage = () => {
       userId: userData.id,
       user: userData.user,
       mood: 3,
+      steps: 0,
       // Omitting steps, stepsGoal, sleep, and exercise to test minimal data
     };
     
@@ -109,7 +110,16 @@ const TestPage = () => {
     } finally {
       setIsLoading(false);
     }
-        
+  };
+
+  const handleTestCreateJournalEntry = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
+    setIsLoading(true);
+    
     const mockJournalData = {
       userId: userData.id,
       content: "Today was a productive day. I managed to complete all my tasks and even had time for a short walk in the evening.",
@@ -179,27 +189,6 @@ const TestPage = () => {
       )}
       
       <div className="space-y-8">
-        <div>
-          <h2 className="text-xl font-semibold mb-3">Daily Logs</h2>
-          <div className="flex space-x-4">
-            <button
-              onClick={handleTestCreateDailyLog}
-              disabled={isLoading || !userData}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              {isLoading ? 'Processing...' : 'Create Test Daily Log'}
-            </button>
-            
-            <button
-              onClick={handleTestGetDailyLogs}
-              disabled={isLoading || !userData}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              {isLoading ? 'Processing...' : 'Get Daily Logs'}
-            </button>
-          </div>
-        </div>
-
         <div>
           <h2 className="text-xl font-semibold mb-3">Journal Entries</h2>
           <div className="flex space-x-4">
