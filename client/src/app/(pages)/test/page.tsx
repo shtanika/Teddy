@@ -86,6 +86,31 @@ const TestPage = () => {
     }
   };
 
+  const handleTestCreateMinimalDailyLog = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    const minimalDailyLogData = {
+      userId: userData.id,
+      user: userData.user,
+      mood: 3,
+      // Omitting steps, stepsGoal, sleep, and exercise to test minimal data
+    };
+    
+    try {
+      const response = await apiClient.createDailyLog(minimalDailyLogData);
+      setResult(JSON.stringify(response, null, 2));
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">API Test Page</h1>
@@ -118,6 +143,35 @@ const TestPage = () => {
           >
             {isLoading ? 'Processing...' : 'Get Daily Logs'}
           </button>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-3">Daily Logs</h2>
+          <div className="flex space-x-4 flex-wrap gap-y-2">
+            <button
+              onClick={handleTestCreateDailyLog}
+              disabled={isLoading || !userData}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Create Test Daily Log'}
+            </button>
+            
+            <button
+              onClick={handleTestCreateMinimalDailyLog}
+              disabled={isLoading || !userData}
+              className="bg-blue-300 hover:bg-blue-400 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Create Minimal Daily Log'}
+            </button>
+            
+            <button
+              onClick={handleTestGetDailyLogs}
+              disabled={isLoading || !userData}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Get Daily Logs'}
+            </button>
+          </div>
         </div>
 
         {result && (
