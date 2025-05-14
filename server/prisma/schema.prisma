@@ -77,8 +77,8 @@ model DailyLog {
   userId     String
 
   date       DateTime   @unique
-  mood       Int
-  steps      Int
+  mood       Int?
+  steps      Int?
   stepsGoal  Int?
 
   sleep      SleepLog[]
@@ -92,7 +92,7 @@ model SleepLog {
   dailyLog   DailyLog   @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
   dailyLogId String     @unique
 
-  duration   Float      // In hours
+  duration   Float?      // In hours
   sleepGoal  Float?     // In hours
   quality    String?     // e.g., "poor", "fair", "good", "excellent"
 }
@@ -104,7 +104,7 @@ model ExerciseLog {
 
   type           ExerciseType? // Predefined type (optional)
   customType     String?       // User-defined label (e.g., "Dancing", "Martial Arts")
-  duration       Int           // In minutes
+  duration       Int?           // In minutes
   exerciseGoal   Int?          // In minutes
   intensity      String?       // e.g., "low", "moderate", "high" (optional)
 }

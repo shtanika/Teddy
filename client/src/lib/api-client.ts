@@ -1,14 +1,14 @@
 type DailyLogData = {
   userId: string;
-  mood: number;
-  steps: number;
+  mood?: number;
+  steps?: number;
   stepsGoal?: number;
-  sleep: {
+  sleep?: {
     duration: number;
     quality?: string;
     sleepGoal?: number;
   };
-  exercise: {
+  exercise?: {
     type?: string;
     customType?: string;
     duration: number;

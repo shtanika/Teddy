@@ -31,41 +31,56 @@ router.post('/', async (req, res) => {
       },
     });
 
-    if (existingLog) {
-      // Delete associated sleep/exercise records
-      await prisma.sleepLog.deleteMany({
-        where: { dailyLogId: existingLog.id },
-      });
+    // Prepare data object with required fields
+    const dailyLogData = {
+      mood,
+      steps,
+      stepsGoal,
+    };
 
-      await prisma.exerciseLog.deleteMany({
-        where: { dailyLogId: existingLog.id },
-      });
+    // Add sleep data if provided
+    if (sleep) {
+      dailyLogData.sleep = {
+        create: {
+          id: randomUUID(),
+          duration: sleep.duration,
+          quality: sleep.quality,
+          sleepGoal: sleep.sleepGoal,
+        },
+      };
+    }
+
+    // Add exercise data if provided
+    if (exercise) {
+      dailyLogData.exercises = {
+        create: {
+          id: randomUUID(),
+          type: exercise.type,
+          customType: exercise.customType,
+          duration: exercise.duration,
+          intensity: exercise.intensity,
+        },
+      };
+    }
+
+    if (existingLog) {
+      // Delete associated sleep/exercise records if they exist
+      if (existingLog.sleep && existingLog.sleep.length > 0) {
+        await prisma.sleepLog.deleteMany({
+          where: { dailyLogId: existingLog.id },
+        });
+      }
+
+      if (existingLog.exercises && existingLog.exercises.length > 0) {
+        await prisma.exerciseLog.deleteMany({
+          where: { dailyLogId: existingLog.id },
+        });
+      }
 
       // Update existing log
       const updatedLog = await prisma.dailyLog.update({
         where: { id: existingLog.id },
-        data: {
-          mood,
-          steps,
-          stepsGoal,
-          sleep: {
-            create: {
-              id: randomUUID(),
-              duration: sleep.duration,
-              quality: sleep.quality,
-              sleepGoal: sleep.sleepGoal,
-            },
-          },
-          exercises: {
-            create: {
-              id: randomUUID(),
-              type: exercise.type,
-              customType: exercise.customType,
-              duration: exercise.duration,
-              intensity: exercise.intensity,
-            },
-          },
-        },
+        data: dailyLogData,
         include: {
           user: true,
           sleep: true,
@@ -77,32 +92,15 @@ router.post('/', async (req, res) => {
     }
 
     // If no log exists, create a new one
+    const newLogData = {
+      id: randomUUID(),
+      userId,
+      date: new Date(),
+      ...dailyLogData,
+    };
+
     const newLog = await prisma.dailyLog.create({
-      data: {
-        id: randomUUID(),
-        userId,
-        date: new Date(),
-        mood,
-        steps,
-        stepsGoal,
-        sleep: {
-          create: {
-            id: randomUUID(),
-            duration: sleep.duration,
-            quality: sleep.quality,
-            sleepGoal: sleep.sleepGoal,
-          },
-        },
-        exercises: {
-          create: {
-            id: randomUUID(),
-            type: exercise.type,
-            customType: exercise.customType,
-            duration: exercise.duration,
-            intensity: exercise.intensity,
-          },
-        },
-      },
+      data: newLogData,
       include: {
         user: true,
         sleep: true,
