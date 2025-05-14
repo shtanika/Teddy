@@ -173,6 +173,42 @@ const TestPage = () => {
     }
   };
 
+  const handleTestGetDailyLogsInsights = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await apiClient.getDailyLogsInsights(userData.id);
+      setResult(JSON.stringify(response, null, 2));
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTestGetComprehensiveInsights = async () => {
+    if (!userData) {
+      setResult('Please sign in first');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await apiClient.getComprehensiveInsights(userData.id);
+      setResult(JSON.stringify(response, null, 2));
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">API Test Page</h1>
@@ -243,6 +279,27 @@ const TestPage = () => {
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
             >
               {isLoading ? 'Processing...' : 'Get Daily Logs'}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-3">AI Insights</h2>
+          <div className="flex space-x-4">
+            <button
+              onClick={handleTestGetDailyLogsInsights}
+              disabled={isLoading || !userData}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Get Daily Logs Insights'}
+            </button>
+            
+            <button
+              onClick={handleTestGetComprehensiveInsights}
+              disabled={isLoading || !userData}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Get Comprehensive Insights'}
             </button>
           </div>
         </div>
