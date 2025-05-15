@@ -31,6 +31,8 @@ export default function JournalPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [dayEntries, setDayEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -178,6 +180,32 @@ export default function JournalPage() {
     });
   };
 
+  const handleDayClick = (day: number) => {
+    const clickedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    
+    // If clicking the same day, toggle the selection off
+    if (selectedDate && 
+        selectedDate.getDate() === day && 
+        selectedDate.getMonth() === clickedDate.getMonth() && 
+        selectedDate.getFullYear() === clickedDate.getFullYear()) {
+      setSelectedDate(null);
+      setDayEntries([]);
+      return;
+    }
+    
+    setSelectedDate(clickedDate);
+    
+    // Find entries for this day
+    const entriesForDay = entries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate.getDate() === day && 
+             entryDate.getMonth() === clickedDate.getMonth() && 
+             entryDate.getFullYear() === clickedDate.getFullYear();
+    });
+    
+    setDayEntries(entriesForDay);
+  };
+
   const renderCalendar = () => {
     const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     
@@ -208,12 +236,19 @@ export default function JournalPage() {
                entryDate.getFullYear() === currentMonth.getFullYear();
       });
       
+      // Check if this day is selected
+      const isSelected = selectedDate && 
+                        selectedDate.getDate() === i && 
+                        selectedDate.getMonth() === currentMonth.getMonth() && 
+                        selectedDate.getFullYear() === currentMonth.getFullYear();
+      
       days.push(
         <div 
           key={`day-${i}`} 
           className={`aspect-square p-2 text-center text-sm hover:bg-teddy-beige/50 rounded-lg cursor-pointer ${
             hasEntries ? 'bg-teddy-beige/30 font-semibold' : ''
-          }`}
+          } ${isSelected ? 'ring-2 ring-teddy-brown' : ''}`}
+          onClick={() => handleDayClick(i)}
         >
           {i}
         </div>
@@ -221,41 +256,94 @@ export default function JournalPage() {
     }
     
     return (
-      <div className="card p-6 mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Entry Calendar</h2>
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={handlePrevMonth}
-              className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <span className="font-medium">{monthName}</span>
-            <button 
-              onClick={handleNextMonth}
-              className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+      <div className="space-y-4">
+        <div className="card p-6 mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Entry Calendar</h2>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={handlePrevMonth}
+                className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <span className="font-medium">{monthName}</span>
+              <button 
+                onClick={handleNextMonth}
+                className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-7 gap-2 mb-4">
+            <div className="text-center text-sm text-teddy-accent">Sun</div>
+            <div className="text-center text-sm text-teddy-accent">Mon</div>
+            <div className="text-center text-sm text-teddy-accent">Tue</div>
+            <div className="text-center text-sm text-teddy-accent">Wed</div>
+            <div className="text-center text-sm text-teddy-accent">Thu</div>
+            <div className="text-center text-sm text-teddy-accent">Fri</div>
+            <div className="text-center text-sm text-teddy-accent">Sat</div>
+          </div>
+          <div className="grid grid-cols-7 gap-2">
+            {days}
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          <div className="text-center text-sm text-teddy-accent">Sun</div>
-          <div className="text-center text-sm text-teddy-accent">Mon</div>
-          <div className="text-center text-sm text-teddy-accent">Tue</div>
-          <div className="text-center text-sm text-teddy-accent">Wed</div>
-          <div className="text-center text-sm text-teddy-accent">Thu</div>
-          <div className="text-center text-sm text-teddy-accent">Fri</div>
-          <div className="text-center text-sm text-teddy-accent">Sat</div>
-        </div>
-        <div className="grid grid-cols-7 gap-2">
-          {days}
-        </div>
+        
+        {/* Day entries preview */}
+        {selectedDate && dayEntries.length > 0 && (
+          <div className="card p-4 mb-4 animate-fadeIn">
+            <h3 className="font-medium text-teddy-brown mb-3">
+              Entries for {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </h3>
+            <div className="space-y-3 max-h-60 overflow-y-auto">
+              {dayEntries.map(entry => (
+                <Link 
+                  key={entry.id} 
+                  href={`/journal/${entry.id}`}
+                  className="block p-3 bg-white/80 hover:bg-teddy-beige/20 rounded-lg border border-teddy-beige/30 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-teddy-accent mb-1">
+                        {new Date(entry.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      <p className="line-clamp-2 text-teddy-brown">
+                        {entry.content}
+                      </p>
+                    </div>
+                    {entry.mood && (
+                      <span className="px-2 py-1 bg-teddy-beige/30 text-teddy-brown rounded-full text-xs">
+                        {entry.mood}
+                      </span>
+                    )}
+                  </div>
+                  {entry.tags && entry.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {entry.tags.slice(0, 3).map(tag => (
+                        <span 
+                          key={tag} 
+                          className="px-1.5 py-0.5 bg-teddy-beige/20 text-teddy-accent rounded-full text-xs"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                      {entry.tags.length > 3 && (
+                        <span className="px-1.5 py-0.5 bg-teddy-beige/10 text-teddy-accent rounded-full text-xs">
+                          +{entry.tags.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
