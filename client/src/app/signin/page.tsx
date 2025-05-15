@@ -19,6 +19,8 @@ export default function SignInPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
+    console.log("Attempting sign in with:", { email, callbackURL: '/dashboard' });
+
     try {
       const { data, error } = await authClient.signIn.email({
         email,
@@ -27,16 +29,22 @@ export default function SignInPage() {
         rememberMe: true
       }, {
         onRequest: () => {
+          console.log("Sign-in request started");
           setLoading(true);
         },
-        onSuccess: () => {
+        onSuccess: (ctx) => {
+          console.log("Sign-in successful:", ctx);
           router.push('/dashboard');
         },
         onError: (ctx) => {
+          console.error("Sign-in error:", ctx.error);
           setError(ctx.error.message);
         },
       });
+      
+      console.log("Sign-in response:", { data, error });
     } catch (err) {
+      console.error("Sign-in exception:", err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);

@@ -39,6 +39,7 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchUserData = async () => {
       const { data: session, error } = await authClient.getSession();
+      console.log('Session data:', session, 'Error:', error);
       if (session?.user?.name) {
         setUserData({
           name: session.user.name,
