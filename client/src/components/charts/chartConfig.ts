@@ -1,6 +1,7 @@
-import { ChartOptions } from 'chart.js';
+import { ChartOptions, TooltipItem } from 'chart.js';
 
-export const defaultChartOptions: ChartOptions<'line'> = {
+// Make the type more generic to work with different chart types
+export const defaultChartOptions: ChartOptions<any> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -24,7 +25,7 @@ export const defaultChartOptions: ChartOptions<'line'> = {
       boxPadding: 4,
       usePointStyle: true,
       callbacks: {
-        label: (context) => {
+        label: (context: TooltipItem<any>) => {
           let label = context.dataset.label || '';
           if (label) {
             label += ': ';
