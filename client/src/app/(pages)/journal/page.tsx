@@ -255,9 +255,12 @@ export default function JournalPage() {
       );
     }
     
+    // Determine if we should show the side-by-side layout
+    const showSideBySide = selectedDate && dayEntries.length > 0;
+    
     return (
-      <div className="space-y-4">
-        <div className="card p-6 mb-4">
+      <div className={`space-y-4 ${showSideBySide ? 'grid grid-cols-2 gap-6 space-y-0' : ''}`}>
+        <div className={`card p-6 ${showSideBySide ? 'col-span-1' : 'mb-4'}`}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Entry Calendar</h2>
             <div className="flex items-center space-x-2">
@@ -294,37 +297,46 @@ export default function JournalPage() {
           </div>
         </div>
         
-        {/* Day entries preview */}
-        {selectedDate && dayEntries.length > 0 && (
-          <div className="card p-4 mb-4 animate-fadeIn">
-            <h3 className="font-medium text-teddy-brown mb-3">
-              Entries for {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-            </h3>
-            <div className="space-y-3 max-h-60 overflow-y-auto">
+        {/* Day entries preview - now in side-by-side layout when a day is selected */}
+        {showSideBySide && (
+          <div className="card p-6 col-span-1 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-teddy-brown">
+                {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </h3>
+              <button 
+                onClick={() => { setSelectedDate(null); setDayEntries([]); }}
+                className="p-2 hover:bg-teddy-beige/50 rounded-full transition-colors"
+                aria-label="Close day view"
+              >
+                <svg className="w-5 h-5 text-teddy-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
               {dayEntries.map(entry => (
                 <Link 
                   key={entry.id} 
                   href={`/journal/${entry.id}`}
-                  className="block p-3 bg-white/80 hover:bg-teddy-beige/20 rounded-lg border border-teddy-beige/30 transition-colors"
+                  className="block p-4 bg-white/80 hover:bg-teddy-beige/20 rounded-lg border border-teddy-beige/30 transition-colors"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-teddy-accent mb-1">
-                        {new Date(entry.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                      <p className="line-clamp-2 text-teddy-brown">
-                        {entry.content}
-                      </p>
-                    </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm text-teddy-accent">
+                      {new Date(entry.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                     {entry.mood && (
                       <span className="px-2 py-1 bg-teddy-beige/30 text-teddy-brown rounded-full text-xs">
                         {entry.mood}
                       </span>
                     )}
                   </div>
+                  <p className="text-teddy-brown mb-3">
+                    {entry.content}
+                  </p>
                   {entry.tags && entry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {entry.tags.slice(0, 3).map(tag => (
+                      {entry.tags.map(tag => (
                         <span 
                           key={tag} 
                           className="px-1.5 py-0.5 bg-teddy-beige/20 text-teddy-accent rounded-full text-xs"
@@ -332,11 +344,6 @@ export default function JournalPage() {
                           #{tag}
                         </span>
                       ))}
-                      {entry.tags.length > 3 && (
-                        <span className="px-1.5 py-0.5 bg-teddy-beige/10 text-teddy-accent rounded-full text-xs">
-                          +{entry.tags.length - 3} more
-                        </span>
-                      )}
                     </div>
                   )}
                 </Link>
