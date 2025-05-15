@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { authClient } from '@/lib/auth-client';
 import PageContainer from '@/components/layout/PageContainer';
@@ -24,10 +24,15 @@ export default function JournalPage() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [allTags, setAllTags] = useState<string[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [dayEntries, setDayEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -63,15 +68,92 @@ export default function JournalPage() {
     }
   };
 
+  // Extract all unique tags from entries
+  useEffect(() => {
+    if (entries.length > 0) {
+      const tags = new Set<string>();
+      entries.forEach(entry => {
+        entry.tags?.forEach(tag => tags.add(tag));
+      });
+      setAllTags(Array.from(tags));
+    }
+  }, [entries]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Show tag suggestions if the user types #
+    if (value.includes('#')) {
+      const lastHashtagIndex = value.lastIndexOf('#');
+      const partialTag = value.slice(lastHashtagIndex + 1).split(' ')[0];
+      
+      if (partialTag) {
+        const matchingTags = allTags
+          .filter(tag => tag.toLowerCase().includes(partialTag.toLowerCase()))
+          .map(tag => `#${tag}`);
+        
+        setSearchSuggestions(matchingTags);
+        setShowSuggestions(matchingTags.length > 0);
+      } else {
+        setSearchSuggestions(allTags.map(tag => `#${tag}`));
+        setShowSuggestions(allTags.length > 0);
+      }
+    } else {
+      setShowSuggestions(false);
+    }
   };
 
-  const filteredEntries = entries.filter(entry => 
-    entry.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    entry.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    entry.mood?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const selectSuggestion = (suggestion: string) => {
+    // Replace the last hashtag and partial tag with the selected suggestion
+    const lastHashtagIndex = searchQuery.lastIndexOf('#');
+    const beforeHashtag = searchQuery.substring(0, lastHashtagIndex);
+    const afterPartialTag = searchQuery.substring(lastHashtagIndex).split(' ');
+    afterPartialTag[0] = suggestion;
+    
+    setSearchQuery(beforeHashtag + afterPartialTag.join(' '));
+    setShowSuggestions(false);
+    
+    // Focus back on the input
+    const searchInput = document.getElementById('journal-search');
+    if (searchInput) {
+      searchInput.focus();
+    }
+  };
+
+  // Enhanced filtering to handle hashtag searches
+  const filteredEntries = useMemo(() => {
+    return entries.filter(entry => {
+      // Check if we're searching for tags with hashtag
+      const hashtagSearches = searchQuery.match(/#(\w+)/g);
+      
+      if (hashtagSearches && hashtagSearches.length > 0) {
+        // For each hashtag in the search query, check if the entry has that tag
+        const hasAllTags = hashtagSearches.every(hashtagSearch => {
+          const tagName = hashtagSearch.substring(1).toLowerCase();
+          return entry.tags?.some(tag => tag.toLowerCase() === tagName);
+        });
+        
+        // If searching only with hashtags, return based on tag match
+        if (searchQuery.trim().split(' ').every(term => term.startsWith('#'))) {
+          return hasAllTags;
+        }
+        
+        // If mixed search (hashtags and text), check both
+        const textToSearch = searchQuery.replace(/#\w+/g, '').trim().toLowerCase();
+        return hasAllTags && (
+          textToSearch === '' || 
+          entry.content.toLowerCase().includes(textToSearch) ||
+          entry.mood?.toLowerCase().includes(textToSearch)
+        );
+      }
+      
+      // Regular search (no hashtags)
+      return entry.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        entry.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        entry.mood?.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  }, [entries, searchQuery]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -96,6 +178,32 @@ export default function JournalPage() {
       newDate.setMonth(prev.getMonth() + 1);
       return newDate;
     });
+  };
+
+  const handleDayClick = (day: number) => {
+    const clickedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    
+    // If clicking the same day, toggle the selection off
+    if (selectedDate && 
+        selectedDate.getDate() === day && 
+        selectedDate.getMonth() === clickedDate.getMonth() && 
+        selectedDate.getFullYear() === clickedDate.getFullYear()) {
+      setSelectedDate(null);
+      setDayEntries([]);
+      return;
+    }
+    
+    setSelectedDate(clickedDate);
+    
+    // Find entries for this day
+    const entriesForDay = entries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate.getDate() === day && 
+             entryDate.getMonth() === clickedDate.getMonth() && 
+             entryDate.getFullYear() === clickedDate.getFullYear();
+    });
+    
+    setDayEntries(entriesForDay);
   };
 
   const renderCalendar = () => {
@@ -128,54 +236,121 @@ export default function JournalPage() {
                entryDate.getFullYear() === currentMonth.getFullYear();
       });
       
+      // Check if this day is selected
+      const isSelected = selectedDate && 
+                        selectedDate.getDate() === i && 
+                        selectedDate.getMonth() === currentMonth.getMonth() && 
+                        selectedDate.getFullYear() === currentMonth.getFullYear();
+      
       days.push(
         <div 
           key={`day-${i}`} 
           className={`aspect-square p-2 text-center text-sm hover:bg-teddy-beige/50 rounded-lg cursor-pointer ${
             hasEntries ? 'bg-teddy-beige/30 font-semibold' : ''
-          }`}
+          } ${isSelected ? 'ring-2 ring-teddy-brown' : ''}`}
+          onClick={() => handleDayClick(i)}
         >
           {i}
         </div>
       );
     }
     
+    // Determine if we should show the side-by-side layout
+    const showSideBySide = selectedDate && dayEntries.length > 0;
+    
     return (
-      <div className="card p-6 mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Entry Calendar</h2>
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={handlePrevMonth}
-              className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <span className="font-medium">{monthName}</span>
-            <button 
-              onClick={handleNextMonth}
-              className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+      <div className={`space-y-4 ${showSideBySide ? 'grid grid-cols-2 gap-6 space-y-0' : ''}`}>
+        <div className={`card p-6 ${showSideBySide ? 'col-span-1' : 'mb-4'}`}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Entry Calendar</h2>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={handlePrevMonth}
+                className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <span className="font-medium">{monthName}</span>
+              <button 
+                onClick={handleNextMonth}
+                className="p-2 hover:bg-teddy-beige/50 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-7 gap-2 mb-4">
+            <div className="text-center text-sm text-teddy-accent">Sun</div>
+            <div className="text-center text-sm text-teddy-accent">Mon</div>
+            <div className="text-center text-sm text-teddy-accent">Tue</div>
+            <div className="text-center text-sm text-teddy-accent">Wed</div>
+            <div className="text-center text-sm text-teddy-accent">Thu</div>
+            <div className="text-center text-sm text-teddy-accent">Fri</div>
+            <div className="text-center text-sm text-teddy-accent">Sat</div>
+          </div>
+          <div className="grid grid-cols-7 gap-2">
+            {days}
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-2 mb-4">
-          <div className="text-center text-sm text-teddy-accent">Sun</div>
-          <div className="text-center text-sm text-teddy-accent">Mon</div>
-          <div className="text-center text-sm text-teddy-accent">Tue</div>
-          <div className="text-center text-sm text-teddy-accent">Wed</div>
-          <div className="text-center text-sm text-teddy-accent">Thu</div>
-          <div className="text-center text-sm text-teddy-accent">Fri</div>
-          <div className="text-center text-sm text-teddy-accent">Sat</div>
-        </div>
-        <div className="grid grid-cols-7 gap-2">
-          {days}
-        </div>
+        
+        {/* Day entries preview - now in side-by-side layout when a day is selected */}
+        {showSideBySide && (
+          <div className="card p-6 col-span-1 animate-fadeIn">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-teddy-brown">
+                {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </h3>
+              <button 
+                onClick={() => { setSelectedDate(null); setDayEntries([]); }}
+                className="p-2 hover:bg-teddy-beige/50 rounded-full transition-colors"
+                aria-label="Close day view"
+              >
+                <svg className="w-5 h-5 text-teddy-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
+              {dayEntries.map(entry => (
+                <Link 
+                  key={entry.id} 
+                  href={`/journal/${entry.id}`}
+                  className="block p-4 bg-white/80 hover:bg-teddy-beige/20 rounded-lg border border-teddy-beige/30 transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm text-teddy-accent">
+                      {new Date(entry.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                    {entry.mood && (
+                      <span className="px-2 py-1 bg-teddy-beige/30 text-teddy-brown rounded-full text-xs">
+                        {entry.mood}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-teddy-brown mb-3">
+                    {entry.content}
+                  </p>
+                  {entry.tags && entry.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {entry.tags.map(tag => (
+                        <span 
+                          key={tag} 
+                          className="px-1.5 py-0.5 bg-teddy-beige/20 text-teddy-accent rounded-full text-xs"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -230,12 +405,35 @@ export default function JournalPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input 
+              id="journal-search"
               type="text" 
-              placeholder="Search entries..." 
+              placeholder="Search entries or #tags..." 
               className="pl-10 pr-4 py-2 bg-white/80 border border-teddy-muted/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-teddy-accent/20 w-64"
               value={searchQuery}
               onChange={handleSearch}
+              onFocus={() => {
+                if (searchQuery.includes('#')) setShowSuggestions(true);
+              }}
+              onBlur={() => {
+                // Delay hiding suggestions to allow for clicks
+                setTimeout(() => setShowSuggestions(false), 200);
+              }}
             />
+            
+            {/* Tag suggestions dropdown */}
+            {showSuggestions && (
+              <div className="absolute z-10 mt-1 w-full bg-white rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {searchSuggestions.map((suggestion, index) => (
+                  <div 
+                    key={index}
+                    className="px-4 py-2 hover:bg-teddy-beige/30 cursor-pointer"
+                    onClick={() => selectSuggestion(suggestion)}
+                  >
+                    <span className="font-medium text-teddy-brown">{suggestion}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <Link 
             href="/journal/new" 
@@ -245,6 +443,31 @@ export default function JournalPage() {
           </Link>
         </div>
       </div>
+
+      {/* Render search info if searching */}
+      {searchQuery && (
+        <div className="mb-4 px-4 py-2 bg-teddy-beige/20 rounded-lg">
+          <p className="text-teddy-accent">
+            Showing results for: 
+            <span className="ml-2 font-medium">
+              {searchQuery.split(' ').map((term, i) => (
+                <span key={i}>
+                  {term.startsWith('#') ? (
+                    <span className="inline-block px-2 py-0.5 bg-teddy-beige/50 text-teddy-brown rounded-full mx-1">
+                      {term}
+                    </span>
+                  ) : (
+                    <span className="mx-1">{term}</span>
+                  )}
+                </span>
+              ))}
+            </span>
+          </p>
+          <p className="text-xs text-teddy-accent/70 mt-1">
+            Found {filteredEntries.length} {filteredEntries.length === 1 ? 'entry' : 'entries'}
+          </p>
+        </div>
+      )}
 
       {/* Calendar View */}
       {viewMode === 'calendar' && renderCalendar()}
