@@ -36,7 +36,12 @@ export default async function middleware(request: NextRequest) {
   const shouldBypass = BYPASS_PATHS.some(p => path === p || path.startsWith(`${p}/`))
   const shouldRedirectIfAuth = AUTH_REDIRECT_PATHS.some(p => path === p)
 
-  const sessionCookie = getSessionCookie(request)
+  //const sessionCookie = getSessionCookie(request)
+  const cookieName = process.env.NODE_ENV === 'production'
+  ? '__Secure-better-auth.session_token'
+  : 'better-auth.session_token';
+  const sessionCookie = request.cookies.get(cookieName)?.value;
+  
   console.warn('All cookies:', JSON.stringify(request.cookies.getAll()));
   console.warn('Session cookie found:', !!sessionCookie);
   console.warn('Session cookie value:', sessionCookie);
