@@ -90,7 +90,7 @@ model DailyLog {
 model SleepLog {
   id         String     @id @map("_id")
   dailyLog   DailyLog   @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
-  dailyLogId String     @unique
+  dailyLogId String     
 
   duration   Float?      // In hours
   sleepGoal  Float?     // In hours
@@ -100,7 +100,7 @@ model SleepLog {
 model ExerciseLog {
   id             String        @id @map("_id")
   dailyLog       DailyLog      @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
-  dailyLogId     String        @unique
+  dailyLogId     String        
 
   type           ExerciseType? // Predefined type (optional)
   customType     String?       // User-defined label (e.g., "Dancing", "Martial Arts")

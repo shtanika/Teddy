@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 interface QuickLogEntry {
   id: string;
-  type: 'steps' | 'mood' | 'exercise' | 'sleep';
+  type: 'mood' | 'exercise' | 'sleep';
   value: number;
   timestamp: Date;
   isIncrement: boolean;
@@ -17,14 +17,6 @@ interface QuickLogProps {
 }
 
 const quickActions = [
-  {
-    type: 'steps' as const,
-    label: 'Steps',
-    icon: '👣',
-    increment: 100,
-    unit: 'steps',
-    color: 'bg-green-100 text-green-700',
-  },
   {
     type: 'mood' as const,
     label: 'Mood',
