@@ -23,7 +23,7 @@ export const auth = betterAuth({
       secure: process.env.NODE_ENV === "production", // Only require secure in production
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use lax in development
-      partitioned: process.env.NODE_ENV === "production" ? true : false,
+      //partitioned: process.env.NODE_ENV === "production" ? true : false,
       path: "/",
     },
   },
