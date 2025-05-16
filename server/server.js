@@ -13,12 +13,31 @@ app.use(cors({
   origin: process.env.FRONTEND_URL, // NextJS client URL
   credentials: true, // Allow credentials (cookies, authorization headers)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
+
+// Add these headers for all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
 app.use(morgan('dev')); // Logging
 
 // Auth routes
-app.all("/api/auth/*", toNodeHandler(auth));
+app.all("/api/auth/*", (req, res, next) => {
+  console.log("Auth request headers:", req.headers);
+  const handler = toNodeHandler(auth);
+  
+  // Capture the response
+  const originalEnd = res.end;
+  res.end = function(...args) {
+    console.log("Auth response headers:", res.getHeaders());
+    return originalEnd.apply(this, args);
+  };
+  
+  return handler(req, res, next);
+});
 
 // Parse JSON bodies
 app.use(express.json());

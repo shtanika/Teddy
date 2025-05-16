@@ -37,6 +37,9 @@ export default async function middleware(request: NextRequest) {
   const shouldRedirectIfAuth = AUTH_REDIRECT_PATHS.some(p => path === p)
 
   const sessionCookie = getSessionCookie(request)
+  console.log('All cookies:', request.cookies.getAll());
+  console.log('Session cookie found:', !!sessionCookie);
+  console.log('Session cookie value:', sessionCookie);
 
   try {
     // Handle landing page redirect for authenticated users

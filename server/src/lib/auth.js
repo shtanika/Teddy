@@ -17,5 +17,16 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },
-
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production", // Only use secure cookies in production
+    defaultCookieAttributes: {
+      secure: process.env.NODE_ENV === "production", // Only require secure in production
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use lax in development
+      partitioned: process.env.NODE_ENV === "production" ? true : false,
+    },
+  },
+  trustedOrigins: [
+    process.env.FRONTEND_URL,
+  ],
 });
