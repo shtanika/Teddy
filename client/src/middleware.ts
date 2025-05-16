@@ -37,30 +37,30 @@ export default async function middleware(request: NextRequest) {
   const shouldRedirectIfAuth = AUTH_REDIRECT_PATHS.some(p => path === p)
 
   const sessionCookie = getSessionCookie(request)
-  console.log('All cookies:', request.cookies.getAll());
-  console.log('Session cookie found:', !!sessionCookie);
-  console.log('Session cookie value:', sessionCookie);
+  console.warn('All cookies:', JSON.stringify(request.cookies.getAll()));
+  console.warn('Session cookie found:', !!sessionCookie);
+  console.warn('Session cookie value:', sessionCookie);
 
   try {
     // Handle landing page redirect for authenticated users
     if (shouldRedirectIfAuth && sessionCookie) {
-      console.log('👤 [Middleware] Authenticated user on landing page, redirecting to dashboard')
+      console.warn('👤 [Middleware] Authenticated user on landing page, redirecting to dashboard')
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
     // Allow public paths or non-protected ones
     if (!isProtected || shouldBypass) {
+      console.warn(`[Middleware] Allowing access to ${path} (public or bypassed path)`)
       return NextResponse.next()
     }
 
-  // For protected paths, check session
-
+    // For protected paths, check session
     if (!sessionCookie) {
-      console.warn('⚠️ [Middleware] Not authenticated. Redirecting.')
+      console.warn(`⚠️ [Middleware] Not authenticated for protected path: ${path}. Redirecting.`)
       return NextResponse.redirect(new URL('/signin', request.url))
     }
 
-    console.log('✅ [Middleware] Authenticated user:')
+    console.warn(`✅ [Middleware] Authenticated user accessing: ${path}`)
     return NextResponse.next()
   } catch (err) {
     console.error('🔥 [Middleware] Error in auth check:', err)

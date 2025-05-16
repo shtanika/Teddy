@@ -19,7 +19,7 @@ export default function SignInPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    console.log("Attempting sign in with:", { email, callbackURL: '/dashboard' });
+    console.warn("Attempting sign in with:", { email, callbackURL: '/dashboard' });
 
     try {
       const { data, error } = await authClient.signIn.email({
@@ -29,22 +29,32 @@ export default function SignInPage() {
         rememberMe: true
       }, {
         onRequest: () => {
-          console.log("Sign-in request started");
+          console.warn("Sign-in request started");
           setLoading(true);
         },
         onSuccess: (ctx) => {
-          console.log("Sign-in successful:", ctx);
-          router.push('/dashboard');
+          //console.log("Sign-in successful:", ctx);
+          //router.push('/dashboard');
+
+          console.warn("Sign-in successful:", JSON.stringify(ctx));
+          
+          // Check if cookies were set
+          console.warn("Document cookies after sign-in:", document.cookie);
+          
+          // Add a delay before redirect to ensure logs are visible
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1000);
         },
         onError: (ctx) => {
-          console.error("Sign-in error:", ctx.error);
+          console.warn("Sign-in error:", JSON.stringify(ctx.error));
           setError(ctx.error.message);
         },
       });
       
-      console.log("Sign-in response:", { data, error });
+      console.warn("Sign-in response:", JSON.stringify({ data, error }));
     } catch (err) {
-      console.error("Sign-in exception:", err);
+      console.warn("Sign-in exception:", err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
