@@ -18,16 +18,24 @@ export const auth = betterAuth({
     },
   },
   advanced: {
-    useSecureCookies: process.env.NODE_ENV === "production", // Only use secure cookies in production
+    crossSubDomainCookies: process.env.NODE_ENV === 'production'
+      ? {
+          enabled: true,
+          domain: '.teddyjournal.com',
+        }
+      : undefined,
     defaultCookieAttributes: {
       secure: process.env.NODE_ENV === "production", // Only require secure in production
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use lax in development
-      //partitioned: process.env.NODE_ENV === "production" ? true : false,
-      path: "/",
+      partitioned: process.env.NODE_ENV === "production" ? true : false,
     },
   },
   trustedOrigins: [
-    process.env.FRONTEND_URL,
+    'https://www.teddyjournal.com',
+    'https://teddyjournal.com',
+    'https://www.api.teddyjournal.com',
+    'https://api.teddyjournal.com',
+    'http://localhost:3000', // For local development
   ],
 });
