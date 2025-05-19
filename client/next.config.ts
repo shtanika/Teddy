@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/auth/:path*',
-        destination: 'http://localhost:5000/api/auth/:path*',
+        destination: `${process.env.BACKEND_URL}/api/auth/:path*`,
       },
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*',
+        destination: `${process.env.BACKEND_URL}/api/:path*`,
       },
     ];
   },
@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
         pathname: '/a/**',
       }
     ],
+  },
+  env: {
+    BACKEND_URL: process.env.BACKEND_URL,
   },
 };
 
