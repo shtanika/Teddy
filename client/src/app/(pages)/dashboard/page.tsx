@@ -7,17 +7,6 @@ import PageContainer from "@/components/layout/PageContainer";
 // Mock data - In a real app, this would come from an API or database
 const mockStats = [
     {
-      title: "Steps",
-      value: "2,500",
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
-      trend: { value: 12, label: "Daily Goal: 10,000" },
-      variant: "success" as const,
-    },
-    {
       title: "Mood",
       value: "Happy",
       icon: (
@@ -52,16 +41,6 @@ const mockStats = [
     },
   ];
   
-  const mockWeeklyActivity = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        label: "Steps",
-        data: [6000, 8000, 7500, 8500, 8200, 9000, 8234],
-      },
-    ],
-  };
-  
   const mockDailyBreakdown = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
@@ -87,7 +66,6 @@ export default function DashboardPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
           <ActivitySummary
-            weeklyActivity={mockWeeklyActivity}
             dailyBreakdown={mockDailyBreakdown}
           />
         </div>

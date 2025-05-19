@@ -15,8 +15,6 @@ const formatDailyLogsForAI = (dailyLogs) => {
     return {
       date: log.date,
       mood: log.mood,
-      steps: log.steps,
-      stepsGoal: log.stepsGoal,
       sleep: log.sleep ? {
         duration: log.sleep.duration,
         quality: log.sleep.quality,

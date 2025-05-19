@@ -22,15 +22,6 @@ interface DailyProgressProps {
 
 const defaultGoals: Goal[] = [
   {
-    id: 'steps',
-    name: 'Steps',
-    target: 10000,
-    current: 0,
-    unit: 'steps',
-    icon: '👣',
-    color: 'bg-blue-100 text-blue-700',
-  },
-  {
     id: 'exercise',
     name: 'Exercise',
     target: 30,
@@ -58,8 +49,7 @@ export function DailyProgress({ goals = defaultGoals, onGoalUpdate, className }:
   const handleIncrement = (goalId: string) => {
     const updatedGoals = goals.map(goal => {
       if (goal.id === goalId) {
-        const increment = goal.id === 'steps' ? 100 : 
-                         goal.id === 'exercise' ? 5 : 
+        const increment = goal.id === 'exercise' ? 5 : 
                          goal.id === 'sleep' ? 1 : 50;
         return {
           ...goal,
@@ -74,8 +64,7 @@ export function DailyProgress({ goals = defaultGoals, onGoalUpdate, className }:
   const handleDecrement = (goalId: string) => {
     const updatedGoals = goals.map(goal => {
       if (goal.id === goalId) {
-        const decrement = goal.id === 'steps' ? 100 : 
-                         goal.id === 'exercise' ? 5 : 
+        const decrement = goal.id === 'exercise' ? 5 : 
                          goal.id === 'sleep' ? 1 : 50;
         return {
           ...goal,

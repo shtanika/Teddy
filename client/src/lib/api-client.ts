@@ -1,8 +1,13 @@
+type ExerciseData = {
+  type?: string;
+  customType?: string;
+  duration: number;
+  intensity?: string;
+};
+
 type DailyLogData = {
   userId: string;
   mood?: number;
-  steps?: number;
-  stepsGoal?: number;
   sleep?: {
     duration: number;
     quality?: string;
@@ -14,6 +19,9 @@ type DailyLogData = {
     duration: number;
     intensity?: string;
   };
+  exercises?: {
+    create: ExerciseData[];
+  }
 };
 
 type JournalEntryData = {

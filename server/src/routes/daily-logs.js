@@ -5,10 +5,17 @@ import { randomUUID } from 'crypto';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Helper to remove undefined fields from an object
+function removeUndefinedFields(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined)
+  );
+}
+
 // Create or update daily log (only one per user per day)
 router.post('/', async (req, res) => {
   try {
-    const { userId, mood, steps, stepsGoal, sleep, exercise } = req.body;
+    const { userId, mood, sleep, exercises } = req.body;
 
     const startOfDay = new Date();
     startOfDay.setUTCHours(0, 0, 0, 0);
@@ -31,12 +38,13 @@ router.post('/', async (req, res) => {
       },
     });
 
-    // Prepare data object with required fields
-    const dailyLogData = {
+    // Prepare data object with possible fields
+    let dailyLogData = {
       mood,
-      steps,
-      stepsGoal,
     };
+
+    // Remove any undefined keys to prevent Prisma errors
+    dailyLogData = removeUndefinedFields(dailyLogData);
 
     // Add sleep data if provided
     if (sleep) {
@@ -51,17 +59,17 @@ router.post('/', async (req, res) => {
     }
 
     // Add exercise data if provided
-    if (exercise) {
-      dailyLogData.exercises = {
-        create: {
-          id: randomUUID(),
-          type: exercise.type,
-          customType: exercise.customType,
-          duration: exercise.duration,
-          intensity: exercise.intensity,
-        },
-      };
-    }
+    if (exercises && exercises.create && Array.isArray(exercises.create)) {
+  dailyLogData.exercises = {
+    create: exercises.create.map((ex) => ({
+      id: randomUUID(),
+      type: ex.type,
+      customType: ex.customType || null,
+      duration: ex.duration,
+      intensity: ex.intensity,
+    })),
+  };
+}
 
     if (existingLog) {
       // Delete associated sleep/exercise records if they exist
