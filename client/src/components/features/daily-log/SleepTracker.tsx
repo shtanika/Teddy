@@ -5,12 +5,15 @@ import { useState } from 'react';
 
 interface SleepTrackerProps {
   onSleepUpdate?: (duration: number, quality: number) => void;
+  duration?: number;
+  quality?: number;
   className?: string;
 }
 
-export function SleepTracker({ onSleepUpdate, className }: SleepTrackerProps) {
-  const [duration, setDuration] = useState<number>(8);
-  const [quality, setQuality] = useState<number>(3);
+
+export function SleepTracker({ duration: initialDuration = 8, quality: initialQuality = 3, onSleepUpdate, className }: SleepTrackerProps) {
+const [duration, setDuration] = useState<number>(initialDuration);
+const [quality, setQuality] = useState<number>(initialQuality);
 
   const handleDurationChange = (value: number) => {
     setDuration(value);

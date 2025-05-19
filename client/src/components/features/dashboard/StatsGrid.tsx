@@ -10,7 +10,7 @@ interface StatItem {
     label: string;
   };
   description?: string;
-  variant?: 'default' | 'success' | 'warning' | 'error';
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
 }
 
 interface StatsGridProps {

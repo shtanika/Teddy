@@ -12,6 +12,7 @@ interface Exercise {
 
 interface ExerciseLoggerProps {
   onExerciseUpdate?: (exercises: Exercise[]) => void;
+  exercises?: Exercise[];
   className?: string;
 }
 
@@ -25,8 +26,12 @@ const exerciseTypes = [
   { value: 'other', label: 'Other', icon: '⚡' },
 ];
 
-export function ExerciseLogger({ onExerciseUpdate, className }: ExerciseLoggerProps) {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+export function ExerciseLogger({
+  onExerciseUpdate,
+  exercises: exercisesProp = [],
+  className,
+}: ExerciseLoggerProps) {
+  const [exercises, setExercises] = useState<Exercise[]>(exercisesProp ?? []);
   const [selectedType, setSelectedType] = useState<string>('');
   const [duration, setDuration] = useState<number>(30);
   const [intensity, setIntensity] = useState<number>(3);

@@ -9,7 +9,7 @@ interface StatProps {
     label: string;
   };
   description?: string;
-  variant?: 'default' | 'success' | 'warning' | 'error';
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
   className?: string;
 }
 
@@ -27,6 +27,7 @@ export function Stat({
     success: "text-green-500",
     warning: "text-yellow-500",
     error: "text-red-500",
+    info: "text-blue-500",
   };
 
   return (
