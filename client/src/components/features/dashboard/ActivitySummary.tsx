@@ -21,7 +21,7 @@ export function ActivitySummary({
   return (
     <>
       {/* Daily Breakdown Chart */}
-      <Card variant="elevated" padding="md" className="lg:col-span-1">
+      <Card variant="elevated" padding="md" className="lg:col-span-3">
         <h3 className="text-lg font-semibold text-teddy-brown mb-4">Weekly Exercise Time</h3>
         <div className="w-full h-[300px]">
           <BarChart
